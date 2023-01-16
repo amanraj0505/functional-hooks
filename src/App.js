@@ -1,4 +1,3 @@
-import logo from "./cat.png";
 import "./App.css";
 import { useEffect, useState, createContext, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
@@ -13,6 +12,28 @@ function App() {
   const inputRef = useRef();
   const refValue = useRef("");
   const [inputText, setInputText] = useState("");
+  const [count, setCount] = useState(100);
+  const [useEffectcount, setUseEffectCount] = useState(100);
+  const intervelRef = useRef();
+
+  const startIntervel = () => {
+    intervelRef.current = setInterval(() => {
+      setCount((count) => count - 1);
+    }, 1000);
+  };
+  const handleReset = () => {
+    clearInterval(intervelRef.current); // increment is undefined
+    setCount(100);
+  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setUseEffectCount((useEffectcount) => useEffectcount + 1);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+  //------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
   useEffect(() => {
     console.log("useEffect called (Counter)");
     fetch("https://jsonplaceholder.typicode.com/todos/" + String(counter))
@@ -31,6 +52,9 @@ function App() {
       console.log("cleanup(componentWillUnmount)");
     };
   }, []);
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
   //here current is persisted and we are updating it manually but this refvalue.current can be use to access the previous value of the state.
   // if we use useSte here trying to persist the previous value we can't do that as the useSate value will be updated after reRender;
   /**
@@ -40,89 +64,129 @@ function App() {
   useEffect(() => {
     refValue.current = inputText;
   }, [inputText]);
+
+  //------------------------------------------------------------------------------------------------------------------------------------------------------------------//
+
   return (
     <>
       <ContextExample.Provider value={"Aman"}>
         <div className="App">
-          <header className="App-header">
-            <img src={logo} className="App-logo" alt="logo" />
-            <p>UseRef Usage</p>
-            <input
-              ref={inputRef}
-              onChange={(e) => setInputText(e.target.value)}
-            />
-            <p>
-              Input text used to be{" "}
-              <b style={{ color: "red" }}>{refValue.current}</b> but now its{" "}
-              <b style={{ color: "red" }}>{inputText}</b>
-            </p>
-            <p>
-              {counter}
-              <br></br>
-              <button
-                style={{
-                  height: 40,
-                  width: 200,
-                  borderRadius: 4,
-                  background: "#fdcb6e",
-                }}
-                onClick={() => {
-                  setCounter(counter + 1);
-                }}
-              >
-                Increment
-              </button>
-              <button
-                style={{
-                  height: 40,
-                  width: 200,
-                  borderRadius: 4,
-                  background: "#fdcb6e",
-                  marginLeft: 10,
-                }}
-                onClick={() => {
-                  setCounter(counter - 1);
-                }}
-              >
-                Decrement
-              </button>
-            </p>
-            <p>
-              {reduxCount}
-              <br></br>
-              <button
-                style={{
-                  height: 40,
-                  width: 200,
-                  borderRadius: 4,
-                  background: "#fdcb6e",
-                }}
-                onClick={() => {
-                  dispatch(counterActions.increment());
-                }}
-              >
-                Redux Increment
-              </button>
-              <button
-                style={{
-                  height: 40,
-                  width: 200,
-                  borderRadius: 4,
-                  background: "#fdcb6e",
-                  marginLeft: 10,
-                }}
-                onClick={() => {
-                  dispatch(counterActions.decrement());
-                }}
-              >
-                Redux Decrement
-              </button>
-            </p>
-            <p>
-              User Title for number {counter} : {title}
-            </p>
-            <CompA />
-          </header>
+          <p>(1) UseRef Usage</p>
+          <input
+            ref={inputRef}
+            onChange={(e) => setInputText(e.target.value)}
+          />
+          <p>
+            Input text used to be{" "}
+            <b style={{ color: "red" }}>{refValue.current}</b> but now its{" "}
+            <b style={{ color: "red" }}>{inputText}</b>
+          </p>
+          <div>
+            ----------------------------------------------------------------------------------------------------------------------
+          </div>
+          <p>
+            <p>(2) UseEffect and Redux</p>
+            {counter}
+            <br></br>
+            <button
+              style={{
+                height: 40,
+                width: 200,
+                borderRadius: 4,
+                background: "#fdcb6e",
+              }}
+              onClick={() => {
+                setCounter(counter + 1);
+              }}
+            >
+              Increment
+            </button>
+            <button
+              style={{
+                height: 40,
+                width: 200,
+                borderRadius: 4,
+                background: "#fdcb6e",
+                marginLeft: 10,
+              }}
+              onClick={() => {
+                setCounter(counter - 1);
+              }}
+            >
+              Decrement
+            </button>
+          </p>
+          <p>
+            {reduxCount}
+            <br></br>
+            <button
+              style={{
+                height: 40,
+                width: 200,
+                borderRadius: 4,
+                background: "#fdcb6e",
+              }}
+              onClick={() => {
+                dispatch(counterActions.increment());
+              }}
+            >
+              Redux Increment
+            </button>
+            <button
+              style={{
+                height: 40,
+                width: 200,
+                borderRadius: 4,
+                background: "#fdcb6e",
+                marginLeft: 10,
+              }}
+              onClick={() => {
+                dispatch(counterActions.decrement());
+              }}
+            >
+              Redux Decrement
+            </button>
+          </p>
+          <p>
+            User Title for number {counter} : {title}
+          </p>
+          <div>
+            ----------------------------------------------------------------------------------------------------------------------
+          </div>
+          <p>(3) Use Of Context</p>
+          <CompA />
+          <div>
+            ----------------------------------------------------------------------------------------------------------------------
+          </div>
+          <p>(4) React functional Component and SetIntervel</p>
+          <div style={{ margin: 10 }}>Interval Counter: {count}</div>
+          <div style={{ margin: 10 }}>UseEffct Counter: {useEffectcount}</div>
+          <button
+            style={{
+              marginBottom: 20,
+              height: 40,
+              width: 200,
+              borderRadius: 4,
+              background: "#fdcb6e",
+            }}
+            onClick={() => startIntervel()}
+          >
+            Start Interval
+          </button>
+          <button
+            style={{
+              height: 40,
+              width: 200,
+              borderRadius: 4,
+              background: "#fdcb6e",
+            }}
+            onClick={() => handleReset()}
+          >
+            Reset Intervel
+          </button>
+          <div>
+            ----------------------------------------------------------------------------------------------------------------------
+          </div>
         </div>
       </ContextExample.Provider>
     </>
